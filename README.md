@@ -103,3 +103,8 @@ Production mode uses Zap production logging. Other environments use Zap developm
 ## Architecture
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for the DDD package layout and request-flow diagrams.
+
+## Contributors
+
+- [barlus-developer](https://github.com/barlus-developer)
+- Codex
