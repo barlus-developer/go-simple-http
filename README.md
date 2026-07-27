@@ -40,7 +40,7 @@ GET /
 ## Run
 
 ```sh
-go run ./cmd/server
+make
 ```
 
 By default, the server listens on `0.0.0.0:8080`.
@@ -48,7 +48,19 @@ By default, the server listens on `0.0.0.0:8080`.
 ## Test
 
 ```sh
-go test ./...
+make test
+```
+
+## Build
+
+```sh
+make build
+```
+
+## Format
+
+```sh
+make fmt
 ```
 
 ## Try the API

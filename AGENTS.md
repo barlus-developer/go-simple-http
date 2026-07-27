@@ -34,25 +34,25 @@ See `ARCHITECTURE.md` for Mermaid diagrams and request flow details.
 Run the service:
 
 ```sh
-go run ./cmd/server
+make
 ```
 
 Run all tests:
 
 ```sh
-go test ./...
+make test
 ```
 
 Build the server:
 
 ```sh
-go build ./cmd/server
+make build
 ```
 
 Format changed Go files:
 
 ```sh
-gofmt -w <files>
+make fmt
 ```
 
 ## Testing Expectations
@@ -67,8 +67,8 @@ When changing behavior, add or update tests near the affected package:
 Before committing, run:
 
 ```sh
-go test ./...
-go build ./cmd/server
+make test
+make build
 ```
 
 ## Configuration
