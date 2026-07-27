@@ -1,97 +1,37 @@
 # go-simple-http
 
-A small HTTP API built with Gin, Zap, Viper, and a DDD-style package layout. The service exposes one endpoint:
-
-```http
-GET /
-```
+A tiny Go HTTP service with one job: respond to `GET /` with a simple JSON message.
 
 ```json
-{
-  "status": "ok",
-  "message": "Hello, World!!!"
-}
+{"status":"ok","message":"Hello, World!!!"}
 ```
 
-## Tech Stack
+The project is intentionally small, but it is laid out like a production service so it can grow without turning into a single-package demo.
+
+## What Is Inside
 
 - Gin for HTTP routing and middleware.
-- Zap for structured logging.
-- Viper for configuration from defaults, files, and environment variables.
-- Standard Go `net/http` server with graceful shutdown.
-
-## Project Structure
-
-```text
-.
-├── cmd/server              # Application entrypoint
-├── Dockerfile              # Container image definition
-├── .env.example            # Example environment variable overrides
-├── config.example.yaml     # Example local configuration
-├── internal/application    # Use cases and application services
-├── internal/bootstrap      # Dependency wiring
-├── internal/domain         # Domain models
-├── internal/infrastructure # Config, logging, and external adapters
-└── internal/interfaces     # HTTP handlers, middleware, and routers
-```
+- Zap for structured logs.
+- Viper plus `.env` support for configuration.
+- A standard `net/http` server with graceful shutdown.
+- A DDD-style `internal` layout with separate application, domain, HTTP, bootstrap, and infrastructure packages.
 
 ## Requirements
 
-- Go 1.26.5 or compatible with the module version in `go.mod`.
+- Go `1.26.5`, or a compatible version for the `go.mod` setting.
+- Docker, only if you want to build or run the container image.
 
-## Run
+## Run It
+
+Start the API:
 
 ```sh
 make
 ```
 
-By default, the server listens on `0.0.0.0:8080`.
+The server listens on `0.0.0.0:8080` by default.
 
-## Test
-
-```sh
-make test
-```
-
-## Build
-
-```sh
-make build
-```
-
-## Docker
-
-Build the application image:
-
-```sh
-make docker
-```
-
-Run the container with the app's built-in defaults:
-
-```sh
-docker run --rm -p 8080:8080 go-simple-http
-```
-
-Run with Docker-provided environment overrides:
-
-```sh
-docker run --rm -p 3000:3000 -e APP_SERVER_PORT=3000 go-simple-http
-```
-
-Validate the Docker image build:
-
-```sh
-make docker-test
-```
-
-## Format
-
-```sh
-make fmt
-```
-
-## Try the API
+Try it from another terminal:
 
 ```sh
 curl http://localhost:8080/
@@ -103,17 +43,19 @@ Expected response:
 {"status":"ok","message":"Hello, World!!!"}
 ```
 
-## Configuration
-
-The application has built-in defaults, so local configuration is optional. You can override settings with either `config.yaml`, environment variables, or a local `.env` file.
-
-For YAML configuration, copy the example file:
+## Common Commands
 
 ```sh
-cp config.example.yaml config.yaml
+make          # run the server
+make test     # run all tests
+make build    # build the server binary
+make fmt      # format Go files
+make docker   # build the Docker image
 ```
 
-Example config:
+## Configuration
+
+You can run the service without any local config because defaults are built in:
 
 ```yaml
 app:
@@ -124,11 +66,7 @@ server:
   port: 8080
 ```
 
-For environment-based configuration, copy the example environment file:
-
-```sh
-cp .env.example .env
-```
+To override those values, use `config.yaml`, `.env`, or real environment variables.
 
 Example `.env`:
 
@@ -138,26 +76,52 @@ APP_SERVER_HOST=0.0.0.0
 APP_SERVER_PORT=8080
 ```
 
-Environment variables use the `APP_` prefix and replace dots with underscores:
+Environment variables use the `APP_` prefix. Dots in config keys become underscores:
 
 ```sh
 APP_APP_ENVIRONMENT=production APP_SERVER_PORT=3000 go run ./cmd/server
 ```
 
-Real environment variables take precedence over values from `.env`. The local `.env` file is ignored by Git; commit changes to `.env.example` when adding new supported variables.
+Real environment variables win over `.env` values.
 
-## Logging
+## Docker
 
-Each request is logged by the HTTP middleware with structured fields:
+Build the image:
 
-- `method`
-- `path`
-- `status`
-- `body_size`
-- `client_ip`
+```sh
+make docker
+```
 
-Production mode uses Zap production logging. Other environments use Zap development logging.
+Run it:
 
-## Architecture
+```sh
+docker run --rm -p 8080:8080 go-simple-http
+```
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for the DDD package layout and request-flow diagrams.
+Run it on another port:
+
+```sh
+docker run --rm -p 3000:3000 -e APP_SERVER_PORT=3000 go-simple-http
+```
+
+## Project Layout
+
+```text
+cmd/server              process entrypoint and graceful shutdown
+internal/bootstrap      dependency wiring
+internal/domain         domain models
+internal/application    use cases and application services
+internal/interfaces     HTTP handlers, middleware, and router setup
+internal/infrastructure config, logging, and technical adapters
+```
+
+For more detail, see [ARCHITECTURE.md](./ARCHITECTURE.md).
+
+## Notes For Contributors
+
+Keep the public API small unless the project goal changes. When behavior changes, update or add tests near the package you touched, then run:
+
+```sh
+make test
+make build
+```

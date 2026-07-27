@@ -1,90 +1,125 @@
 # AGENTS.md
 
-Guidance for coding agents working in this repository.
+AI-only operating instructions for coding agents in this repository. Optimize for accurate, minimal, well-tested changes. Keep the README human-friendly; put agent-specific workflow, constraints, and performance notes here.
 
-## Project Overview
+## Fast Context
 
-`go-simple-http` is a small Go HTTP API using Gin, Zap, Viper, and a DDD-style package layout. The current API surface is intentionally minimal:
+- Project: `go-simple-http`
+- Language: Go
+- Module: `github.com/barlus-developer/go-simple-http`
+- Current API: `GET /`
+- Expected response: `{"status":"ok","message":"Hello, World!!!"}`
+- Main command: `make`
+- Test command: `make test`
+- Build command: `make build`
+- Format command: `make fmt`
 
-```http
-GET /
-```
+## Agent Priority Order
 
-Expected response:
+1. Preserve current behavior unless the user explicitly asks to change it.
+2. Keep edits scoped to the request.
+3. Follow existing package boundaries.
+4. Add or update tests when behavior changes.
+5. Run the narrowest useful verification first, then `make test` and `make build` before handoff when practical.
+6. Do not overwrite unrelated local changes, local config, or generated documentation unless requested.
+
+## Package Boundaries
+
+- `cmd/server`: process entrypoint, `net/http` server setup, graceful shutdown.
+- `internal/bootstrap`: dependency wiring only.
+- `internal/domain`: domain data structures and domain behavior.
+- `internal/application`: use cases and application services.
+- `internal/interfaces/http/handler`: Gin handlers.
+- `internal/interfaces/http/middleware`: HTTP middleware.
+- `internal/interfaces/http/router`: route registration and Gin engine setup.
+- `internal/infrastructure/config`: Viper, `.env`, environment variable, and config loading.
+- `internal/infrastructure/logger`: Zap logger construction.
+
+Do not move behavior across these layers without a clear reason. HTTP should depend on application services; application should depend on domain; infrastructure should not contain request handling or business behavior.
+
+## Current Runtime Contract
+
+`GET /` returns HTTP 200 and this JSON body:
 
 ```json
 {"status":"ok","message":"Hello, World!!!"}
 ```
 
-## Architecture
+Treat this as a compatibility contract. If a task changes it, update:
 
-Keep changes aligned with the existing package boundaries:
+- Application tests in `internal/application`.
+- Router/API tests in `internal/interfaces/http/router`.
+- README examples.
+- Any architecture notes affected by the new flow.
 
-- `cmd/server`: process entrypoint and graceful shutdown.
-- `internal/bootstrap`: dependency wiring.
-- `internal/domain`: domain models.
-- `internal/application`: application services and use cases.
-- `internal/interfaces/http`: HTTP handlers, middleware, and router setup.
-- `internal/infrastructure`: configuration, logging, and technical adapters.
+## Configuration Contract
 
-See `ARCHITECTURE.md` for Mermaid diagrams and request flow details.
+Defaults are built into `internal/infrastructure/config`:
 
-## Development Commands
+- `app.environment`: `development`
+- `server.host`: `0.0.0.0`
+- `server.port`: `8080`
 
-Run the service:
+Supported override sources:
 
-```sh
-make
-```
+- `config.yaml`
+- `config/config.yaml`
+- `.env`
+- Real environment variables with the `APP_` prefix
 
-Run all tests:
+Environment key mapping: `app.environment` becomes `APP_APP_ENVIRONMENT`; `server.port` becomes `APP_SERVER_PORT`.
 
-```sh
-make test
-```
+Real environment variables take precedence over `.env`. Do not commit secrets or machine-specific config changes.
 
-Build the server:
+## Testing Map
 
-```sh
-make build
-```
+Place tests near the behavior:
 
-Format changed Go files:
-
-```sh
-make fmt
-```
-
-## Testing Expectations
-
-When changing behavior, add or update tests near the affected package:
-
-- Config and error behavior: `internal/infrastructure/config`.
+- Config loading, precedence, and errors: `internal/infrastructure/config`.
+- Logger construction: `internal/infrastructure/logger`.
 - Application service behavior: `internal/application`.
-- HTTP API behavior: `internal/interfaces/http/router`.
-- HTTP middleware behavior: `internal/interfaces/http/middleware`.
+- Handler behavior: `internal/interfaces/http/handler`.
+- Route behavior and HTTP response contract: `internal/interfaces/http/router`.
+- Middleware logging behavior: `internal/interfaces/http/middleware`.
+- Process startup/shutdown: prefer testing extracted logic; avoid brittle signal-process tests unless necessary.
 
-Before committing, run:
+## Commands
 
-```sh
-make test
-make build
-```
-
-## Configuration
-
-Runtime defaults are built in. Local overrides can use `config.yaml` or environment variables with the `APP_` prefix, such as:
+Use these commands from the repository root:
 
 ```sh
-APP_APP_ENVIRONMENT=production APP_SERVER_PORT=3000 go run ./cmd/server
+make          # run service
+make test     # go test ./...
+make build    # go build ./cmd/server
+make fmt      # gofmt all Go files outside .git
+make docker   # docker build -t go-simple-http .
 ```
 
-Do not commit local secrets or environment-specific configuration.
+When only Go files changed, run `make fmt` before tests. For small changes, a package-level `go test ./path/...` is acceptable while iterating, but final verification should prefer `make test` and `make build`.
 
-## Git Notes
+## Documentation Rules
 
-- Keep commits focused and describe the behavior or documentation change.
-- When an agent contributes to a commit, add that agent as a Git co-author using a `Co-authored-by:` trailer in the commit message.
-- For Codex-authored changes, use `Co-authored-by: Codex <codex@openai.com>`.
-- Do not remove generated project documentation unless the user asks.
-- Do not overwrite local config files or unrelated user changes.
+- `README.md` is for humans: explain what the project does, how to run it, how to configure it, and where to look next.
+- `AGENTS.md` is for AI agents: keep it direct, operational, and optimized for quick correct edits.
+- `ARCHITECTURE.md` holds structural diagrams and request-flow details.
+- If API behavior, configuration, commands, or package flow changes, update the relevant docs in the same change.
+
+## Git Rules
+
+- Keep commits focused.
+- Do not revert or rewrite user changes unless explicitly asked.
+- Do not delete generated project documentation unless requested.
+- If Codex contributes to a commit, use this trailer:
+
+```text
+Co-authored-by: Codex <codex@openai.com>
+```
+
+## Performance Notes For Agents
+
+- Read the smallest set of files needed to understand the change.
+- Prefer `rg` and package-local tests while exploring.
+- Avoid broad refactors in this small service.
+- Prefer standard library and existing dependencies over new packages.
+- Keep new abstractions rare; add them only when they remove real duplication or clarify a growing boundary.
+- Preserve simple behavior and explicit wiring over clever indirection.
