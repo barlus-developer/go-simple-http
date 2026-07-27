@@ -25,6 +25,7 @@ GET /
 ```text
 .
 ├── cmd/server              # Application entrypoint
+├── .env.example            # Example environment variable overrides
 ├── config.example.yaml     # Example local configuration
 ├── internal/application    # Use cases and application services
 ├── internal/bootstrap      # Dependency wiring
@@ -77,7 +78,9 @@ Expected response:
 
 ## Configuration
 
-The application has built-in defaults, so a config file is optional. To override locally, copy the example file:
+The application has built-in defaults, so local configuration is optional. You can override settings with either `config.yaml`, environment variables, or a local `.env` file.
+
+For YAML configuration, copy the example file:
 
 ```sh
 cp config.example.yaml config.yaml
@@ -94,11 +97,27 @@ server:
   port: 8080
 ```
 
+For environment-based configuration, copy the example environment file:
+
+```sh
+cp .env.example .env
+```
+
+Example `.env`:
+
+```env
+APP_APP_ENVIRONMENT=development
+APP_SERVER_HOST=0.0.0.0
+APP_SERVER_PORT=8080
+```
+
 Environment variables use the `APP_` prefix and replace dots with underscores:
 
 ```sh
 APP_APP_ENVIRONMENT=production APP_SERVER_PORT=3000 go run ./cmd/server
 ```
+
+Real environment variables take precedence over values from `.env`. The local `.env` file is ignored by Git; commit changes to `.env.example` when adding new supported variables.
 
 ## Logging
 

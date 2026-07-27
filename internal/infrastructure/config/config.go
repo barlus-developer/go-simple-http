@@ -3,9 +3,11 @@ package config
 import (
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/spf13/viper"
+	"github.com/subosito/gotenv"
 	"go.uber.org/zap"
 )
 
@@ -24,6 +26,10 @@ type ServerConfig struct {
 }
 
 func Load() (Config, error) {
+	if err := gotenv.Load(".env"); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return Config{}, err
+	}
+
 	v := viper.New()
 	v.SetConfigName("config")
 	v.SetConfigType("yaml")
