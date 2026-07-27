@@ -26,3 +26,6 @@ jobs:
 
       - name: Test suite
         run: make test
+
+      - name: Docker build test
+        run: make docker-test

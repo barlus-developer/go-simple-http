@@ -25,6 +25,7 @@ GET /
 ```text
 .
 ├── cmd/server              # Application entrypoint
+├── Dockerfile              # Container image definition
 ├── .env.example            # Example environment variable overrides
 ├── config.example.yaml     # Example local configuration
 ├── internal/application    # Use cases and application services
@@ -56,6 +57,32 @@ make test
 
 ```sh
 make build
+```
+
+## Docker
+
+Build the application image:
+
+```sh
+make docker
+```
+
+Run the container with the app's built-in defaults:
+
+```sh
+docker run --rm -p 8080:8080 go-simple-http
+```
+
+Run with Docker-provided environment overrides:
+
+```sh
+docker run --rm -p 3000:3000 -e APP_SERVER_PORT=3000 go-simple-http
+```
+
+Validate the Docker image build:
+
+```sh
+make docker-test
 ```
 
 ## Format
