@@ -1,0 +1,12 @@
+.git
+.github
+.agents
+.codex
+.env
+.env.*
+config.yaml
+*.log
+Dockerfile
+.dockerignore
+bin
+dist

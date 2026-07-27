@@ -1,7 +1,7 @@
 SHELL := /bin/sh
 .DEFAULT_GOAL := run
 
-.PHONY: run test build fmt
+.PHONY: run test build fmt docker docker-test
 
 run:
 	go run ./cmd/server
@@ -14,3 +14,9 @@ build:
 
 fmt:
 	gofmt -w $$(find . -name '*.go' -not -path './.git/*')
+
+docker:
+	docker build -t go-simple-http .
+
+docker-test:
+	docker build -t go-simple-http-test .

@@ -24,17 +24,5 @@ jobs:
       - name: Download dependencies
         run: go mod download
 
-      - name: Error tests
-        run: go test ./internal/infrastructure/config -run TestLoadReturnsErrorForInvalidConfig
-
-      - name: Unit tests
-        run: go test ./internal/application/... ./internal/interfaces/http/middleware
-
-      - name: API tests
-        run: go test ./internal/interfaces/http/router
-
-      - name: All tests
-        run: go test ./...
-
-      - name: Build test
-        run: go build ./cmd/server
+      - name: Test suite
+        run: make test
