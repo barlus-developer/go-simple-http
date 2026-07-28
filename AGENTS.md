@@ -108,10 +108,11 @@ When only Go files changed, run `make fmt` before tests. For small changes, a pa
 - Keep commits focused.
 - Do not revert or rewrite user changes unless explicitly asked.
 - Do not delete generated project documentation unless requested.
-- If Codex contributes to a commit, use this trailer:
+- If an AI coding agent contributes to a commit, add a co-author trailer identifying that specific agent — do not assume which agent you are or use another agent's name/email. Examples:
 
 ```text
 Co-authored-by: Codex <codex@openai.com>
+Co-authored-by: Claude <noreply@anthropic.com>
 ```
 
 ## Performance Notes For Agents
