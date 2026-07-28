@@ -12,7 +12,7 @@ The project is intentionally small, but it is laid out like a production service
 
 - Gin for HTTP routing and middleware.
 - Zap for structured logs.
-- Viper plus `.env` support for configuration.
+- Viper for configuration, sourced from `config.yaml` or system environment variables.
 - A standard `net/http` server with graceful shutdown.
 - A DDD-style `internal` layout with separate application, domain, HTTP, bootstrap, and infrastructure packages.
 
@@ -59,30 +59,22 @@ You can run the service without any local config because defaults are built in:
 
 ```yaml
 app:
-  environment: development
+  debug: false
 
 server:
   host: 0.0.0.0
   port: 8080
 ```
 
-To override those values, use `config.yaml`, `.env`, or real environment variables.
-
-Example `.env`:
-
-```env
-APP_APP_ENVIRONMENT=development
-APP_SERVER_HOST=0.0.0.0
-APP_SERVER_PORT=8080
-```
+To override those values, use `config.yaml` or real system environment variables.
 
 Environment variables use the `APP_` prefix. Dots in config keys become underscores:
 
 ```sh
-APP_APP_ENVIRONMENT=production APP_SERVER_PORT=3000 go run ./cmd/server
+APP_APP_DEBUG=true APP_SERVER_PORT=3000 go run ./cmd/server
 ```
 
-Real environment variables win over `.env` values.
+Real environment variables win over `config.yaml`. Set `APP_APP_DEBUG=true` (or `app.debug: true` in `config.yaml`) for verbose, human-readable development logs and Gin's debug mode. Leave it unset/`false` for production-style JSON logs and Gin's release mode.
 
 ## Docker
 

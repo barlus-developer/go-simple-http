@@ -20,9 +20,6 @@ coverage.html
 # Local configuration
 config.yaml
 config.yml
-.env
-.env.*
-!.env.example
 
 # Logs
 *.log

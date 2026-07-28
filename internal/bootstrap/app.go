@@ -22,7 +22,7 @@ func New() (*App, error) {
 		return nil, err
 	}
 
-	log, err := logger.New(cfg.App.Environment)
+	log, err := logger.New(cfg.App.Debug)
 	if err != nil {
 		return nil, err
 	}

@@ -16,8 +16,8 @@ func TestLoadUsesDefaultsWhenConfigFileIsMissing(t *testing.T) {
 		t.Fatalf("load config: %v", err)
 	}
 
-	if cfg.App.Environment != "development" {
-		t.Fatalf("expected default environment development, got %q", cfg.App.Environment)
+	if cfg.App.Debug != false {
+		t.Fatalf("expected default debug false, got %v", cfg.App.Debug)
 	}
 	if cfg.Server.Host != "0.0.0.0" {
 		t.Fatalf("expected default host 0.0.0.0, got %q", cfg.Server.Host)
@@ -27,14 +27,14 @@ func TestLoadUsesDefaultsWhenConfigFileIsMissing(t *testing.T) {
 	}
 }
 
-func TestLoadUsesDotEnvFile(t *testing.T) {
+func TestLoadUsesConfigYamlFile(t *testing.T) {
 	tmpDir := t.TempDir()
 	changeWorkingDirectory(t, tmpDir)
 	clearConfigEnv(t)
 
-	env := []byte("APP_APP_ENVIRONMENT=test\nAPP_SERVER_HOST=127.0.0.1\nAPP_SERVER_PORT=3000\n")
-	if err := os.WriteFile(filepath.Join(tmpDir, ".env"), env, 0o600); err != nil {
-		t.Fatalf("write .env: %v", err)
+	yaml := []byte("app:\n  debug: true\nserver:\n  host: 127.0.0.1\n  port: 3000\n")
+	if err := os.WriteFile(filepath.Join(tmpDir, "config.yaml"), yaml, 0o600); err != nil {
+		t.Fatalf("write config.yaml: %v", err)
 	}
 
 	cfg, err := Load()
@@ -42,25 +42,26 @@ func TestLoadUsesDotEnvFile(t *testing.T) {
 		t.Fatalf("load config: %v", err)
 	}
 
-	if cfg.App.Environment != "test" {
-		t.Fatalf("expected .env environment test, got %q", cfg.App.Environment)
+	if cfg.App.Debug != true {
+		t.Fatalf("expected config.yaml debug true, got %v", cfg.App.Debug)
 	}
 	if cfg.Server.Host != "127.0.0.1" {
-		t.Fatalf("expected .env host 127.0.0.1, got %q", cfg.Server.Host)
+		t.Fatalf("expected config.yaml host 127.0.0.1, got %q", cfg.Server.Host)
 	}
 	if cfg.Server.Port != 3000 {
-		t.Fatalf("expected .env port 3000, got %d", cfg.Server.Port)
+		t.Fatalf("expected config.yaml port 3000, got %d", cfg.Server.Port)
 	}
 }
 
-func TestLoadKeepsEnvironmentVariablesOverDotEnvFile(t *testing.T) {
+func TestLoadKeepsEnvironmentVariablesOverConfigYamlFile(t *testing.T) {
 	tmpDir := t.TempDir()
 	changeWorkingDirectory(t, tmpDir)
 	clearConfigEnv(t)
 	t.Setenv("APP_SERVER_PORT", "9000")
 
-	if err := os.WriteFile(filepath.Join(tmpDir, ".env"), []byte("APP_SERVER_PORT=3000\n"), 0o600); err != nil {
-		t.Fatalf("write .env: %v", err)
+	yaml := []byte("server:\n  port: 3000\n")
+	if err := os.WriteFile(filepath.Join(tmpDir, "config.yaml"), yaml, 0o600); err != nil {
+		t.Fatalf("write config.yaml: %v", err)
 	}
 
 	cfg, err := Load()
@@ -116,7 +117,7 @@ func changeWorkingDirectory(t *testing.T, dir string) {
 func clearConfigEnv(t *testing.T) {
 	t.Helper()
 
-	for _, key := range []string{"APP_APP_ENVIRONMENT", "APP_SERVER_HOST", "APP_SERVER_PORT"} {
+	for _, key := range []string{"APP_APP_DEBUG", "APP_SERVER_HOST", "APP_SERVER_PORT"} {
 		value, ok := os.LookupEnv(key)
 		if err := os.Unsetenv(key); err != nil {
 			t.Fatalf("unset %s: %v", key, err)

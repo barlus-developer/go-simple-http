@@ -32,7 +32,7 @@ AI-only operating instructions for coding agents in this repository. Optimize fo
 - `internal/interfaces/http/handler`: Gin handlers.
 - `internal/interfaces/http/middleware`: HTTP middleware.
 - `internal/interfaces/http/router`: route registration and Gin engine setup.
-- `internal/infrastructure/config`: Viper, `.env`, environment variable, and config loading.
+- `internal/infrastructure/config`: Viper, `config.yaml`, and system environment variable config loading.
 - `internal/infrastructure/logger`: Zap logger construction.
 
 Do not move behavior across these layers without a clear reason. HTTP should depend on application services; application should depend on domain; infrastructure should not contain request handling or business behavior.
@@ -56,7 +56,7 @@ Treat this as a compatibility contract. If a task changes it, update:
 
 Defaults are built into `internal/infrastructure/config`:
 
-- `app.environment`: `development`
+- `app.debug`: `false`
 - `server.host`: `0.0.0.0`
 - `server.port`: `8080`
 
@@ -64,12 +64,11 @@ Supported override sources:
 
 - `config.yaml`
 - `config/config.yaml`
-- `.env`
-- Real environment variables with the `APP_` prefix
+- Real system environment variables with the `APP_` prefix (no `.env` file support)
 
-Environment key mapping: `app.environment` becomes `APP_APP_ENVIRONMENT`; `server.port` becomes `APP_SERVER_PORT`.
+Environment key mapping: `app.debug` becomes `APP_APP_DEBUG`; `server.port` becomes `APP_SERVER_PORT`.
 
-Real environment variables take precedence over `.env`. Do not commit secrets or machine-specific config changes.
+Real environment variables take precedence over `config.yaml`. Do not commit secrets or machine-specific config changes.
 
 ## Testing Map
 

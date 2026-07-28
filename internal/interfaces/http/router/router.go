@@ -9,7 +9,7 @@ import (
 )
 
 func New(cfg config.Config, log *zap.Logger, healthHandler *handler.HealthHandler) *gin.Engine {
-	if cfg.App.Environment == "production" {
+	if !cfg.App.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
 

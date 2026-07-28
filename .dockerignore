@@ -2,8 +2,6 @@
 .github
 .agents
 .codex
-.env
-.env.*
 config.yaml
 *.log
 Dockerfile

@@ -14,7 +14,7 @@ import (
 
 func TestRootEndpointReturnsHealthStatus(t *testing.T) {
 	engine := New(
-		config.Config{App: config.AppConfig{Environment: "test"}},
+		config.Config{App: config.AppConfig{Debug: true}},
 		zaptest.NewLogger(t),
 		handler.NewHealthHandler(apphealth.NewService()),
 	)
@@ -42,7 +42,7 @@ func TestRootEndpointReturnsHealthStatus(t *testing.T) {
 
 func TestUnknownEndpointReturnsNotFound(t *testing.T) {
 	engine := New(
-		config.Config{App: config.AppConfig{Environment: "test"}},
+		config.Config{App: config.AppConfig{Debug: true}},
 		zaptest.NewLogger(t),
 		handler.NewHealthHandler(apphealth.NewService()),
 	)

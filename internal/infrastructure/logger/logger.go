@@ -2,10 +2,10 @@ package logger
 
 import "go.uber.org/zap"
 
-func New(environment string) (*zap.Logger, error) {
-	if environment == "production" {
-		return zap.NewProduction()
+func New(debug bool) (*zap.Logger, error) {
+	if debug {
+		return zap.NewDevelopment()
 	}
 
-	return zap.NewDevelopment()
+	return zap.NewProduction()
 }

@@ -3,11 +3,9 @@ package config
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/spf13/viper"
-	"github.com/subosito/gotenv"
 	"go.uber.org/zap"
 )
 
@@ -17,7 +15,7 @@ type Config struct {
 }
 
 type AppConfig struct {
-	Environment string
+	Debug bool
 }
 
 type ServerConfig struct {
@@ -26,10 +24,6 @@ type ServerConfig struct {
 }
 
 func Load() (Config, error) {
-	if err := gotenv.Load(".env"); err != nil && !errors.Is(err, os.ErrNotExist) {
-		return Config{}, err
-	}
-
 	v := viper.New()
 	v.SetConfigName("config")
 	v.SetConfigType("yaml")
@@ -40,7 +34,7 @@ func Load() (Config, error) {
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()
 
-	v.SetDefault("app.environment", "development")
+	v.SetDefault("app.debug", false)
 	v.SetDefault("server.host", "0.0.0.0")
 	v.SetDefault("server.port", 8080)
 
@@ -53,7 +47,7 @@ func Load() (Config, error) {
 
 	return Config{
 		App: AppConfig{
-			Environment: v.GetString("app.environment"),
+			Debug: v.GetBool("app.debug"),
 		},
 		Server: ServerConfig{
 			Host: v.GetString("server.host"),
