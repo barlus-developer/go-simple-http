@@ -3,7 +3,7 @@
 A tiny Go HTTP service with one job: respond to `GET /` with a simple JSON message.
 
 ```json
-{"status":"ok","message":"Hello, World!!!"}
+{"status":"ok","message":"<random meme message, changes each request>"}
 ```
 
 The project is intentionally small, but it is laid out like a production service so it can grow without turning into a single-package demo.
@@ -40,7 +40,7 @@ curl http://localhost:8080/
 Expected response:
 
 ```json
-{"status":"ok","message":"Hello, World!!!"}
+{"status":"ok","message":"<random meme message, changes each request>"}
 ```
 
 ## Common Commands

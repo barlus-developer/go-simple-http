@@ -8,7 +8,7 @@ AI-only operating instructions for coding agents in this repository. Optimize fo
 - Language: Go
 - Module: `github.com/barlus-developer/go-simple-http`
 - Current API: `GET /`
-- Expected response: `{"status":"ok","message":"Hello, World!!!"}`
+- Expected response: `{"status":"ok","message":"<random meme message, changes each request>"}`
 - Main command: `make`
 - Test command: `make test`
 - Build command: `make build`
@@ -42,7 +42,7 @@ Do not move behavior across these layers without a clear reason. HTTP should dep
 `GET /` returns HTTP 200 and this JSON body:
 
 ```json
-{"status":"ok","message":"Hello, World!!!"}
+{"status":"ok","message":"<random meme message, changes each request>"}
 ```
 
 Treat this as a compatibility contract. If a task changes it, update:
