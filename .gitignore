@@ -10,6 +10,9 @@
 *.test
 *.out
 
+# Log file
+*.log
+
 # Go workspace and coverage artifacts
 go.work
 go.work.sum
